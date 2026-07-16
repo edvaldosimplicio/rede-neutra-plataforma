@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+sqlalchemy
+routeros_api
+pydantic

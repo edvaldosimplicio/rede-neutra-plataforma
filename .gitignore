@@ -36,3 +36,6 @@ Thumbs.db
 # Misc
 *.tgz
 .cache/
+*.db
+__pycache__/
+*.pyc
