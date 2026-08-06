@@ -16,9 +16,8 @@ Desktop.ini
 *.log
 
 # Uploaded files (user content)
-Upload/arquivos/imagens/*
-Upload/arquivos/fotos/*
-Upload/arquivos/arquivos/*
+Upload/arquivos/*
+!Upload/arquivos/.gitkeep
 
 # Vendor
 vendor/
