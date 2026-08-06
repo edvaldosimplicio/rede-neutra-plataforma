@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  web:
+    image: php:7.4-apache
+    container_name: meganet_app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./Upload:/var/www/html
+      - ./docker/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/apache.conf:/etc/apache2/sites-available/000-default.conf
+    environment:
+      - DB_SERVIDOR=db
+      - DB_BANCO=provedor
+      - DB_USUARIO=root
+      - DB_SENHA=${DB_SENHA}
+    depends_on:
+      - db
+    networks:
+      - meganet-network
+
+  db:
+    image: mariadb:10.4
+    container_name: meganet_db
+    # SEGURANÇA: porta do banco NÃO exposta para a internet
+    # Acesso apenas interno via rede Docker
+    expose:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_SENHA}
+      MYSQL_DATABASE: provedor
+    volumes:
+      - ./docker/mysql-data:/var/lib/mysql
+      - ./bancodedados.sql:/docker-entrypoint-initdb.d/bancodedados.sql
+    networks:
+      - meganet-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: meganet_pma
+    # SEGURANÇA: phpMyAdmin acessível APENAS via localhost
+    ports:
+      - "127.0.0.1:8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+    depends_on:
+      - db
+    networks:
+      - meganet-network
+
+networks:
+  meganet-network:
+    driver: bridge

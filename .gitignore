@@ -1,0 +1,37 @@
+# Environment
+.env
+
+# OS files
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Uploaded files (user content)
+Upload/arquivos/imagens/*
+Upload/arquivos/fotos/*
+Upload/arquivos/arquivos/*
+
+# Vendor
+vendor/
+node_modules/
+
+# Docker
+docker-data/
+docker/mysql-data/
+
+# Temp
+tmp/
+temp/
+
+# Segurança: nunca commitar dados do banco
+*.sql.bak
+bancodedados_backup*.sql

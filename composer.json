@@ -1,0 +1,23 @@
+{
+    "name": "meganet/site",
+    "description": "Site institucional Provedor de Internet Meganet",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "phpmailer/phpmailer": "^6.8",
+        "vlucas/phpdotenv": "^5.5"
+    },
+    "autoload": {
+        "classmap": [
+            "Upload/system/",
+            "Upload/models/",
+            "Upload/sistema/_system/",
+            "Upload/sistema/_models/"
+        ]
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "echo 'Lembre-se de configurar o arquivo .env a partir do .env.example'"
+        ]
+    }
+}

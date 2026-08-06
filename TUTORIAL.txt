@@ -1,0 +1,23 @@
+Siga os passos: 1- Para instalar basta alterar as para configuração do banco de dados no 
+arquivo _config.php que se encontra na pasta upload.
+
+Atenção: _config.php na opção Pasta você so preenche o compo se seu site estiver em uma 
+pasta , caso seu site esteja instalo na raiz de sua hospedagem pode deixar em branco.
+
+2- Crie uma Key Google reCAPTCHA v2 no endereço 
+https://www.google.com/recaptcha/admin/create para que você possa receber contatos pelo 
+formulário de contato no site.
+
+
+3- Faça a importação do arquivo ( bancodedados.sql ) para sua base de dados através do 
+phpMyAdmin em sua Hospedagem.  
+4- Após este procedimento basta fazer o upload de todos os arquivos que estão na pasta 
+"upload" para seu servidor. 
+ATENÇÃO: DEPOIS QUE VOCÊ TERMINAR A TRANSFERENCIA DOS ARQUIVOS VERIFIQUE SE O 
+ARQUIVO ( .htaccess ) ESTA NA RAIZ DO SEU SITE, CASO CONTRARIO O SITE PODE NÃO 
+FUNCIONAR CORRETAMENTE.  
+5- Se tudo Estiver correto Acesse o Gerenciador de Conteúdos "/sistema" na frente do seu 
+domínio Ex: http://www.seusite.com.br/sistema 
+6- Acesse o administrativo com o Usuário: "admin" e a Senha: "12345" 
+REQUISITOS PARA INSTALAÇÃO:  – Servidor Linux com cPanel da (cPanel.com)  – PHP 5.6 a 7.0 – MySQL – Apache  – PhpMyAdmin 
+Importante ter Conhecimento em Programação.  
