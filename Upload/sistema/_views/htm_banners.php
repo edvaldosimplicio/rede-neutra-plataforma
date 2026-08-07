@@ -59,22 +59,37 @@
 										
 									</div>
 									
-									<div style="text-align:left; padding-top:15px;">
-										<label>Filtro: <?=ajuda('Selecione para filtrar por setor')?></label>
-										<select data-plugin-selectTwo class="form-control select2" name="grupo" onChange="window.location='<?=$_base['objeto']?>inicial/grupo/'+this.value;"; >
-											<?php
-											foreach ($grupos as $key => $value) {
-												
-												if($value['codigo'] == $grupo_selecionado){
-													$selected = " selected ";
-												} else {
-													$selected = "";
+									<div style="text-align:left; padding-top:15px;" class="row">
+										<div class="col-md-6">
+											<label>Filtro por Empresa / Cliente: <?=ajuda('Selecione uma empresa para visualizar apenas as suas propagandas separadamente')?></label>
+											<select data-plugin-selectTwo class="form-control select2" name="empresa" onChange="window.location='<?=$_base['objeto']?>inicial/grupo/<?=$grupo_selecionado?>/empresa/'+this.value;"; >
+												<option value="" <?php if(empty($empresa_selecionada)){ echo "selected"; } ?>>-- Todas as Empresas / Geral --</option>
+												<?php
+												if(isset($empresas) && is_array($empresas)){
+													foreach ($empresas as $emp) {
+														$selected = ($emp['codigo'] == $empresa_selecionada) ? " selected " : "";
+														echo "<option value='".$emp['codigo']."' ".$selected." >".$emp['nome']." (".$emp['usuario'].")</option>";
+													}
 												}
-												
-												echo "<option value='".$value['codigo']."' ".$selected." >".$value['titulo']."</option>";
-											}
-											?>
-										</select>
+												?>
+											</select>
+										</div>
+
+										<div class="col-md-6">
+											<label>Filtro por Categoria/Grupo: <?=ajuda('Selecione para filtrar por setor')?></label>
+											<select data-plugin-selectTwo class="form-control select2" name="grupo" onChange="window.location='<?=$_base['objeto']?>inicial/grupo/'+this.value+'/empresa/<?=$empresa_selecionada?>'"; >
+												<?php
+												foreach ($grupos as $key => $value) {
+													if($value['codigo'] == $grupo_selecionado){
+														$selected = " selected ";
+													} else {
+														$selected = "";
+													}
+													echo "<option value='".$value['codigo']."' ".$selected." >".$value['titulo']."</option>";
+												}
+												?>
+											</select>
+										</div>
 									</div>
 
 									<hr>

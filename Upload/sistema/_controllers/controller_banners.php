@@ -19,14 +19,17 @@ class banners extends controller {
 		$banners = new model_banners();
 		
 		$grupo = $this->get('grupo');
+		$empresa = $this->get('empresa');
 		
-		$dados['grupos'] = $banners->lista_grupos($grupo);
+		$dados['empresa_selecionada'] = $empresa;
+		$dados['empresas'] = $banners->lista_empresas();
+		$dados['grupos'] = $banners->lista_grupos($empresa);
 		
-		if(!$grupo){
+		if(!$grupo && !empty($dados['grupos'])){
 			$grupo = $dados['grupos'][0]['codigo'];
 		}
 		$dados['grupo_selecionado'] = $grupo;
-		$dados['lista'] = $banners->lista($grupo);
+		$dados['lista'] = $banners->lista($grupo, $empresa);
 		
 		$this->view('banners', $dados);
 	}
@@ -43,8 +46,11 @@ class banners extends controller {
 		$banners = new model_banners();
 
 		$grupo = $this->get('grupo');
+		$empresa = $this->get('empresa');
 		$dados['grupo_selecionado'] = $grupo;
-		$dados['grupos'] = $banners->lista_grupos($grupo);
+		$dados['empresa_selecionada'] = $empresa;
+		$dados['empresas'] = $banners->lista_empresas();
+		$dados['grupos'] = $banners->lista_grupos($empresa);
 
 		$this->view('banners.novo', $dados);
 	}
@@ -53,10 +59,15 @@ class banners extends controller {
 		
 		$titulo = $this->post('titulo');
 		$grupo = $this->post('grupo');
+		$empresa_id = $this->post('empresa_id');
 		$endereco = $this->post_htm('endereco');
 
 		$this->valida($titulo);
 		$this->valida($grupo);
+		
+		if (empty($empresa_id) && isset($_SESSION['adm_cod_usuario'])) {
+			$empresa_id = $_SESSION['adm_cod_usuario'];
+		}
 		
 		// Instancia
 		$banners = new model_banners();
@@ -67,6 +78,7 @@ class banners extends controller {
 		$db->inserir('banners', array(
 			'codigo'	=>$codigo,
 			'grupo'		=>$grupo,
+			'empresa_id'=>$empresa_id,
 			'titulo'	=>$titulo,
 			'endereco'	=>$endereco
 		));

@@ -5,10 +5,27 @@
   <fieldset>
 
     <div class="form-group">
+      <label class="col-md-12">Empresa / Cliente <?=ajuda('Selecione a qual empresa este anúncio pertence');?></label>
+      <div class="col-md-12">
+        <select name="empresa_id" class="form-control select2" style="width: 100%;" >
+          <option value='' <?php if(empty($empresa_selecionada)){ echo "selected"; } ?>>Nenhuma (Geral / Todas)</option>
+          <?php
+          if(isset($empresas) && is_array($empresas)){
+            foreach ($empresas as $emp) {
+              $selected = ($emp['codigo'] == $empresa_selecionada) ? " selected " : "";
+              echo "<option value='".$emp['codigo']."' ".$selected." >".$emp['nome']." (".$emp['usuario'].")</option>";
+            }
+          }
+          ?>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
       <label class="col-md-12">Setor <?=ajuda('Posição do banner');?></label>
       <div class="col-md-12">
         <select name="grupo" class="form-control select2" style="width: 100%;" >
-          <option value='' selected >Selecione</option>
+          <option value='' >Selecione</option>
           <?php
           foreach ($grupos as $key => $value) {
 

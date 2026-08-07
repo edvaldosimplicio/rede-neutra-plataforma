@@ -2,7 +2,7 @@
 
 Class model_banners extends model{
 
-	public function lista($grupo){
+	public function lista($grupo, $empresa_id = null){
     	
     	$lista = array();
 
@@ -10,7 +10,7 @@ Class model_banners extends model{
 		$exec = $conexao->Executar("SELECT * FROM banners_ordem WHERE codigo='$grupo' ORDER BY id desc limit 1");
 		$data_ordem = $exec->fetch_object();
 
-		if(isset($data_ordem->data)){
+		if(isset($data_ordem->data) && !empty($data_ordem->data)){
 
 			$order = explode(',', $data_ordem->data);
 
@@ -18,7 +18,11 @@ Class model_banners extends model{
 			foreach($order as $key => $value){
 
 				$conexao = new mysql();
-				$coisas = $conexao->Executar("SELECT * FROM banners WHERE id='$value' ");
+				$sql = "SELECT * FROM banners WHERE id='$value' ";
+				if (!empty($empresa_id)) {
+					$sql .= " AND (empresa_id='$empresa_id' OR empresa_id IS NULL OR empresa_id='') ";
+				}
+				$coisas = $conexao->Executar($sql);
 				$data = $coisas->fetch_object();
 				
 				if(isset($data->titulo)){
@@ -26,10 +30,29 @@ Class model_banners extends model{
 					$lista[$n]['id'] = $data->id;
 					$lista[$n]['codigo'] = $data->codigo;
 					$lista[$n]['titulo'] = $data->titulo;
-					$lista[$n]['imagem'] = $data->imagem;			 
+					$lista[$n]['imagem'] = $data->imagem;
+					$lista[$n]['empresa_id'] = isset($data->empresa_id) ? $data->empresa_id : '';
 					
-				$n++;
+					$n++;
 				}
+			}
+		} else {
+			// Busca direta caso não haja registro de ordem
+			$conexao = new mysql();
+			$sql = "SELECT * FROM banners WHERE grupo='$grupo' ";
+			if (!empty($empresa_id)) {
+				$sql .= " AND (empresa_id='$empresa_id' OR empresa_id IS NULL OR empresa_id='') ";
+			}
+			$sql .= " ORDER BY id DESC";
+			$exec = $conexao->Executar($sql);
+			$n = 0;
+			while($data = $exec->fetch_object()){
+				$lista[$n]['id'] = $data->id;
+				$lista[$n]['codigo'] = $data->codigo;
+				$lista[$n]['titulo'] = $data->titulo;
+				$lista[$n]['imagem'] = $data->imagem;
+				$lista[$n]['empresa_id'] = isset($data->empresa_id) ? $data->empresa_id : '';
+				$n++;
 			}
 		}
 	  	
@@ -100,23 +123,49 @@ Class model_banners extends model{
 	///////////////////////////////////////////////////////////////////////////
 	// GRUPOS
 
-	public function lista_grupos(){
+	public function lista_grupos($empresa_id = null){
  		
  		$categorias = array();
 
 		$db = new mysql();
-		$exec = $db->executar("SELECT * FROM banners_grupos order by titulo asc");
+		$sql = "SELECT * FROM banners_grupos ";
+		if (!empty($empresa_id)) {
+			$sql .= " WHERE (empresa_id='$empresa_id' OR empresa_id IS NULL OR empresa_id='') ";
+		}
+		$sql .= " ORDER BY titulo ASC";
+
+		$exec = $db->executar($sql);
 		$i = 0;
 		while($data = $exec->fetch_object()) {
 			
 			$categorias[$i]['id'] = $data->id;
 			$categorias[$i]['codigo'] = $data->codigo;
 			$categorias[$i]['titulo'] = $data->titulo;
-			$categorias[$i]['bloqueio'] = $data->bloqueio;
+			$categorias[$i]['bloqueio'] = isset($data->bloqueio) ? $data->bloqueio : 0;
+			$categorias[$i]['empresa_id'] = isset($data->empresa_id) ? $data->empresa_id : '';
 
-		$i++;
+			$i++;
 		}
 		return $categorias;
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	// EMPRESAS (Lista de empresas cadastradas no sistema para filtro)
+
+	public function lista_empresas(){
+		$empresas = array();
+		$db = new mysql();
+		$exec = $db->executar("SELECT codigo, nome, usuario FROM adm_usuario ORDER BY nome ASC");
+		if ($exec) {
+			while($data = $exec->fetch_object()){
+				$empresas[] = array(
+					'codigo' => $data->codigo,
+					'nome' => !empty($data->nome) ? $data->nome : $data->usuario,
+					'usuario' => $data->usuario
+				);
+			}
+		}
+		return $empresas;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
