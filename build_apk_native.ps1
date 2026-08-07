@@ -1,4 +1,4 @@
-# Script de Compilação Nativa do APK Meganet TV Player
+# Script de Compilação Nativa do APK Meganet TV Player (Compatibilidade Máxima Android 4.4+)
 $ErrorActionPreference = "Stop"
 
 $JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
@@ -22,16 +22,16 @@ $BUILD_DIR = "$env:TEMP\meganet_build_temp"
 if (Test-Path $BUILD_DIR) { Remove-Item -Recurse -Force $BUILD_DIR }
 New-Item -ItemType Directory -Path "$BUILD_DIR\classes" | Out-Null
 
-Write-Host "1. Compilando codigo Java (MainActivity, BootReceiver, CustomWebViewClient)..."
+Write-Host "1. Compilando codigo Java (Compatível com Android 4.4+ / Java 8)..."
 $javaFiles = Get-ChildItem -Path $SRC_DIR -Filter "*.java" -Recurse | Select-Object -ExpandProperty FullName
 & $JAVAC -encoding UTF-8 -g:none -source 8 -target 8 -bootclasspath $PLATFORM_JAR -d "$BUILD_DIR\classes" $javaFiles
 
-Write-Host "2. Convertendo bytecode Java para DEX com D8 (min-api 21)..."
+Write-Host "2. Convertendo bytecode Java para DEX com D8 (min-api 19)..."
 $classFiles = Get-ChildItem "$BUILD_DIR\classes" -Filter "*.class" -Recurse | Select-Object -ExpandProperty FullName
-& $D8 --min-api 21 --lib $PLATFORM_JAR --output $BUILD_DIR $classFiles
+& $D8 --min-api 19 --lib $PLATFORM_JAR --output $BUILD_DIR $classFiles
 
-Write-Host "3. Empacotando recursos e AndroidManifest.xml com AAPT..."
-& $AAPT package -f -m -J "$BUILD_DIR" -M $MANIFEST -I $PLATFORM_JAR -F "$BUILD_DIR\unsigned.apk"
+Write-Host "3. Empacotando recursos com AAPT (minSdkVersion 19 / targetSdkVersion 33)..."
+& $AAPT package -f -m -J "$BUILD_DIR" -M $MANIFEST -I $PLATFORM_JAR --min-sdk-version 19 --target-sdk-version 33 -F "$BUILD_DIR\unsigned.apk"
 
 Write-Host "4. Adicionando classes.dex no pacote APK..."
 Push-Location $BUILD_DIR
@@ -49,10 +49,10 @@ $KEYSTORE = "$BUILD_DIR\debug.keystore"
 if (Test-Path $KEYSTORE) { Remove-Item $KEYSTORE }
 & $KEYTOOL -genkey -v -keystore $KEYSTORE -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 
-Write-Host "7. Assinando o APK (apksigner)..."
-& $APKSIGNER sign --ks $KEYSTORE --ks-pass pass:android --key-pass pass:android --ks-key-alias androiddebugkey --out "$BUILD_DIR\meganet-tv-box-final.apk" "$BUILD_DIR\aligned.apk"
+Write-Host "7. Assinando o APK com esquema V1 e V2 (Compatibilidade total com todas as TV Boxes)..."
+& $APKSIGNER sign --ks $KEYSTORE --ks-pass pass:android --key-pass pass:android --ks-key-alias androiddebugkey --v1-signing-enabled true --v2-signing-enabled true --out "$BUILD_DIR\meganet-tv-box-final.apk" "$BUILD_DIR\aligned.apk"
 
-# Copia o APK final nativo para a Área de Trabalho e pasta do projeto!
+# Copia o APK final para a Área de Trabalho e pasta do projeto!
 $DESKTOP_DIR = [Environment]::GetFolderPath("Desktop")
 $DESKTOP_APK = Join-Path $DESKTOP_DIR "meganet-tv-box.apk"
 $PROJECT_APK = Join-Path $PROJECT_DIR "meganet-tv-box.apk"
@@ -61,6 +61,6 @@ Copy-Item "$BUILD_DIR\meganet-tv-box-final.apk" $DESKTOP_APK -Force
 Copy-Item "$BUILD_DIR\meganet-tv-box-final.apk" $PROJECT_APK -Force
 
 Write-Host "=========================================="
-Write-Host "SUCCESS! APK Meganet TV Box NATIVO GERADO DO ZERO!"
+Write-Host "SUCCESS! APK Compatível (Android 4.4 ate 14+) gerado com sucesso!"
 Write-Host "=========================================="
 Get-Item $DESKTOP_APK
