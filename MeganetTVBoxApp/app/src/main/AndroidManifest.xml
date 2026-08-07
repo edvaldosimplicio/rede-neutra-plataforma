@@ -13,6 +13,7 @@
 
     <application
         android:allowBackup="true"
+        android:usesCleartextTraffic="true"
         android:icon="@android:drawable/ic_menu_view"
         android:label="Meganet TV Player"
         android:supportsRtl="true"
